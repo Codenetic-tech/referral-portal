@@ -20,6 +20,7 @@ import {
 } from '@/utils/types';
 import DateRangePicker from '@/components/ManagementReport/DateRangePicker';
 import OverviewTab from '@/components/ManagementReport/OverviewTab';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Incentive: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -31,6 +32,12 @@ const Incentive: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const { user } = useAuth();
+
+  // Get actual user credentials from auth context
+  const clientid = user?.clientid || '';
+  const token = user?.token || '';
 
   // Initialize with empty/zero data
   const [summaryData, setSummaryData] = useState<SummaryData>({
@@ -77,7 +84,7 @@ const Incentive: React.FC = () => {
     setError(null);
     
     try {
-      const response = await fetch('https://n8n.gopocket.in/webhook/report', {
+      const response = await fetch('https://n8n.gopocket.in/webhook/referral', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -85,7 +92,9 @@ const Incentive: React.FC = () => {
         body: JSON.stringify({
           source: 'getreport',
           start_date: dateRange.start,
-          end_date: dateRange.end
+          end_date: dateRange.end,
+          clientid: user.clientid,
+          token: user.token
         })
       });
 

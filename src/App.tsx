@@ -17,6 +17,7 @@ import HRMS from './components/HRMS';
 import Clients from './components/Clients';
 import CRMAnalyticsDashboard from './components/CRM/CRMAnalyticsDashboard';
 import TasksKanbanPage from './components/tasks-kanban';
+import ReferralIncentive from './components/referral';
 
 const queryClient = new QueryClient();
 
@@ -73,7 +74,7 @@ const AppContent = () => {
           path="/dashboard" 
           element={
             <ProtectedRoute>
-              <Incentive />
+              <ReferralIncentive />
             </ProtectedRoute>
           } 
         />
