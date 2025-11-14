@@ -37,28 +37,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [token, setToken] = useState<string | null>(null);
   const [path, setPath] = useState<string | null>(null);
 
-  // Improved session check - more flexible validation
+  // Check for valid stored authentication
   const hasValidStoredAuth = () => {
     try {
       const savedUser = localStorage.getItem('hrms_user');
-      const savedEmployee = localStorage.getItem('hrms_employee');
-      const savedCompany = localStorage.getItem('hrms_company');
       const savedToken = localStorage.getItem('hrms_token');
       
       // Check if we have the essential data
-      if (!savedUser || !savedEmployee) {
+      if (!savedUser || !savedToken) {
         return false;
       }
 
       const userData = JSON.parse(savedUser);
-      const employeeData = JSON.parse(savedEmployee);
-      const companyData = savedCompany ? JSON.parse(savedCompany) : null;
 
       // Basic validation - check if required fields exist
-      const hasValidUser = !!(userData && userData.id);
-      const hasValidEmployee = !!(employeeData && employeeData.employeeId);
+      const hasValidUser = !!(userData && userData.token);
       
-      return hasValidUser && hasValidEmployee;
+      return hasValidUser;
     } catch (error) {
       console.error('Error checking stored auth:', error);
       return false;
@@ -70,16 +65,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       try {
         if (hasValidStoredAuth()) {
           const savedUser = localStorage.getItem('hrms_user');
-          const savedEmployee = localStorage.getItem('hrms_employee');
-          const savedCompany = localStorage.getItem('hrms_company');
           const savedToken = localStorage.getItem('hrms_token');
-          const savedPath = localStorage.getItem('hrms_path');
 
           if (savedUser) setUser(JSON.parse(savedUser));
-          if (savedEmployee) setEmployee(JSON.parse(savedEmployee));
-          if (savedCompany) setCompany(JSON.parse(savedCompany));
           if (savedToken) setToken(savedToken);
-          if (savedPath) setPath(savedPath);
           setIsAuthenticated(true);
         } else {
           // Clear any corrupted/incomplete data
@@ -152,98 +141,58 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const loginData = Array.isArray(responseData) ? responseData[0] : responseData;
 
       // Check if we have the required data in the response
-      if (!loginData.employee && !loginData.first_name) {
-        throw new Error('Wrong Backoffice password contact IT');
+      if (!loginData.token || !loginData.role || !loginData.clientid) {
+        throw new Error('Invalid login response format');
       }
 
-      // Determine user role based on employee ID or designation
+      // Determine user role based on the response role
       let userRole: User['role'] = 'employee';
-      if (employeeId === 'HR001' || employeeId === 'hr001') {
-        userRole = 'admin';
-      } else if (loginData.designation?.toLowerCase().includes('manager')) {
+      const responseRole = loginData.role.toLowerCase();
+      
+      if (responseRole === 'admin' || responseRole === 'superadmin') {
+        userRole = responseRole as User['role'];
+      } else if (responseRole === 'manager') {
         userRole = 'manager';
+      } else if (responseRole === 'hr') {
+        userRole = 'hr';
       }
 
-      // Create employee data from the API response
-      const employeeData: Employee = {
-        id: loginData.name,
-        employeeId: loginData.employee,
-        userId: loginData.user_id,
-        companyId: (loginData.company || 'gopocket').toLowerCase().replace(/\s+/g, '-'),
-        firstName: loginData.first_name,
-        lastName: loginData.last_name || '',
-        email: loginData.company_email || loginData.prefered_email,
-        phone: loginData.cell_number,
-        avatar: '/lovable-uploads/e80701e6-7295-455c-a88c-e3c4a1baad9b.png', // Default avatar
-        department: loginData.department,
-        designation: loginData.designation,
-        joiningDate: loginData.date_of_joining,
-        salary: 0, // Not provided in response
-        status: loginData.status?.toLowerCase() === 'active' ? 'confirmed' : 'probation',
-        address: loginData.current_address || '',
-        token: loginData.token,
-        path: loginData.path,
-        emergencyContact: {
-          name: '',
-          phone: '',
-          relationship: ''
-        },
-        documents: [],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
-
-      // Create user data
+      // Create user data from the API response
       const userData: User = {
-        id: loginData.user_id || loginData.name,
-        employeeId: loginData.employee,
-        email: loginData.company_email || loginData.prefered_email,
-        firstName: loginData.first_name.split(' ')[0] || 'User',
-        lastName: loginData.first_name.split(' ').slice(1).join(' ') || 'Name',
-        role: userRole,
-        companyId: employeeData.companyId,
+        id: loginData.clientid,
+        employeeId: loginData.clientid,
+        email: '',
+        firstName: '',
+        lastName: '',
+        role: loginData.role,
+        companyId: 'gopocket',
         avatar: '/lovable-uploads/e80701e6-7295-455c-a88c-e3c4a1baad9b.png',
-        isActive: loginData.status?.toLowerCase() === 'active',
+        isActive: true,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         token: loginData.token,
-        path: loginData.path,
-        team: loginData.team,
-        hierarchy: loginData.hierarchy,
+        path: '',
+        team: '',
+        hierarchy: '',
+        clientid: loginData.clientid
       };
 
-      // Create company data
-      const companyData: Company = {
-        id: employeeData.companyId,
-        name: loginData.company || 'GoPocket',
-        subdomain: 'gopocket',
-        logo: '/lovable-uploads/e80701e6-7295-455c-a88c-e3c4a1baad9b.png',
-        address: '123 Business St, Tech City, TC 12345',
-        phone: '+1 (555) 123-4567',
-        email: 'contact@gopocket.in',
-        website: 'https://gopocket.in',
-        timezone: 'Asia/Kolkata',
-        currency: 'INR',
-        subscriptionPlan: 'premium',
-        subscriptionStatus: 'active',
-        createdAt: '2024-01-01T00:00:00Z',
-        updatedAt: '2024-01-01T00:00:00Z'
-      };
-
-      // Set state
+      // Set state - only user and token
       setUser(userData);
-      setEmployee(employeeData);
-      setCompany(companyData);
+      setEmployee(null); // Clear employee data
+      setCompany(null); // Clear company data
       setIsAuthenticated(true);
-      setToken(loginData.token || null);
-      setPath(loginData.path || null);
+      setToken(loginData.token);
+      setPath(null); // Clear path
       
-      // Save to localStorage - this is critical for persistence
+      // Save to localStorage - only user and token
       localStorage.setItem('hrms_user', JSON.stringify(userData));
-      localStorage.setItem('hrms_employee', JSON.stringify(employeeData));
-      localStorage.setItem('hrms_company', JSON.stringify(companyData));
-      localStorage.setItem('hrms_token', loginData.token || '');
-      localStorage.setItem('hrms_path', loginData.path || '');
+      localStorage.setItem('hrms_token', loginData.token);
+      
+      // Clear other localStorage items that are no longer needed
+      localStorage.removeItem('hrms_employee');
+      localStorage.removeItem('hrms_company');
+      localStorage.removeItem('hrms_path');
       
     } catch (error) {
       console.error('Login error:', error);
@@ -297,4 +246,3 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     </AuthContext.Provider>
   );
 };
-

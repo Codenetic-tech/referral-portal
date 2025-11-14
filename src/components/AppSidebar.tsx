@@ -46,7 +46,7 @@ const allMenuItems = [
     icon: LayoutDashboard,
     color: 'text-purple-500',
     bgColor: 'bg-purple-50',
-    roles: ['manager', 'employee']
+    roles: ['manager', 'employee', 'client']
   },
   {
     title: 'Leads',
@@ -199,7 +199,7 @@ export function AppSidebar() {
                   </div>
                   {user && (
                     <p className="text-xs text-slate-500 mt-1 font-medium">
-                     <span className="text-slate-700">{user.email.split('@')[0]}</span>
+                     <span className="text-slate-700">{user.employeeId}</span>
                     </p>
                   )}
                 </div>

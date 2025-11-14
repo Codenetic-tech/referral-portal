@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { Calendar, ChevronDown, RefreshCw } from 'lucide-react';
+import { Calendar, ChevronDown, LogOut, RefreshCw } from 'lucide-react';
 import { DateRange, QuickRange } from '@/utils/types';
 import { quickRanges, formatDate, applyQuickRange } from '@/utils/types';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from '../ui/use-toast';
 
 interface DateRangePickerProps {
   dateRange: DateRange;
@@ -15,6 +17,15 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
   loading
 }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const { user, logout } = useAuth(); // Move inside component
+
+  const handleLogout = () => {
+    logout();
+    toast({
+      title: "Logged Out",
+      description: "You have been successfully logged out.",
+    });
+  };
 
   const handleApplyQuickRange = (range: QuickRange) => {
     const newDateRange = applyQuickRange(range);
@@ -133,6 +144,13 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
               </div>
             )}
           </div>
+          <button
+            onClick={handleLogout}
+            className="p-2 bg-red-50 rounded-lg transition-all duration-200 group border border-red-200 hover:border-red-300"
+            title="Logout"
+          >
+            <LogOut className="h-4 w-4 text-red-600 group-hover:text-red-800 transition-colors duration-200" />
+          </button>
         </div>
       </div>
     </div>

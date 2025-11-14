@@ -5,7 +5,7 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
-  role: 'superadmin' | 'admin' | 'hr' | 'manager' | 'employee';
+  role: 'client' | 'admin' | 'hr' | 'manager' | 'employee';
   companyId: string;
   avatar?: string;
   isActive: boolean;
@@ -16,6 +16,7 @@ export interface User {
   path: string;
   team: string;
   hierarchy: string;
+  clientid: string;
 }
 
 export interface Company {

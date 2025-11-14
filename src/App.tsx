@@ -51,7 +51,7 @@ const getDefaultRoute = (role: string | undefined) => {
     case 'banking':
       return '/segregation';
     default:
-      return '/crm';
+      return '/dashboard';
   }
 };
 
@@ -73,7 +73,7 @@ const AppContent = () => {
           path="/dashboard" 
           element={
             <ProtectedRoute>
-              <CRMAnalyticsDashboard />
+              <Incentive />
             </ProtectedRoute>
           } 
         />
