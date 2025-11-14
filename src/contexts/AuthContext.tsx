@@ -142,7 +142,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       // Check if we have the required data in the response
       if (!loginData.token || !loginData.role || !loginData.clientid) {
-        throw new Error('Invalid login response format');
+        throw new Error('Authentication failed. Please check your Client Code & Backoffice password.');
       }
 
       // Determine user role based on the response role
