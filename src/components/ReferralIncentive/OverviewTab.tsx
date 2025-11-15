@@ -50,7 +50,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
             </div>
           </div>
           <h3 className="text-sm font-medium opacity-80 mb-1">Total Application</h3>
-          <p className="text-2xl font-bold">₹ {summaryData.totalApplications}</p>
+          <p className="text-2xl font-bold">{summaryData.totalApplications}</p>
         </div>
 
         <div className="bg-white rounded-xl shadow-lg shadow-blue-100 p-6 text-gray-800 transition-all duration-300 hover:bg-gradient-to-br hover:from-blue-500 hover:to-blue-600 hover:text-white hover:shadow-blue-500/40 group">
@@ -64,7 +64,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
             </div>
           </div>
           <h3 className="text-sm font-medium opacity-90 mb-1">Pending Incentives</h3>
-          <p className="text-2xl font-bold">₹ {summaryData.pendingIncentives}</p>
+          <p className="text-2xl font-bold">{summaryData.pendingIncentives}</p>
         </div>
 
         <div className="bg-white rounded-xl shadow-lg shadow-blue-100 p-6 text-gray-800 transition-all duration-300 hover:bg-gradient-to-br hover:from-blue-500 hover:to-blue-600 hover:text-white hover:shadow-blue-500/40 group">
@@ -78,7 +78,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
             </div>
           </div>
           <h3 className="text-sm font-medium opacity-90 mb-1">Paid Incentives</h3>
-          <p className="text-2xl font-bold">₹ {summaryData.paidIncentives}</p>
+          <p className="text-2xl font-bold">{summaryData.paidIncentives}</p>
         </div>
 
         <div className="bg-white rounded-xl shadow-lg shadow-blue-100 p-6 text-gray-800 transition-all duration-300 hover:bg-gradient-to-br hover:from-blue-500 hover:to-blue-600 hover:text-white hover:shadow-blue-500/40 group">

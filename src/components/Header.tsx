@@ -72,12 +72,12 @@ const Header: React.FC = () => {
             <Button variant="ghost" className="flex items-center space-x-2 hover:bg-slate-100">
               <Avatar className="h-8 w-8">
                 <AvatarFallback className="bg-blue-600 text-white">
-                  {user?.username?.charAt(0).toUpperCase()}
+                  {user?.clientid?.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div className="text-left">
                 <div className="text-sm font-medium text-slate-800">
-                  {user?.username}
+                  {user?.clientid}
                 </div>
                 <div className="text-xs text-slate-500">
                   {user?.role}

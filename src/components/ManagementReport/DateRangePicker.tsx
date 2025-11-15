@@ -4,6 +4,17 @@ import { DateRange, QuickRange } from '@/utils/types';
 import { quickRanges, formatDate, applyQuickRange } from '@/utils/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '../ui/use-toast';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Search, User, Settings, Bell } from 'lucide-react';
 
 interface DateRangePickerProps {
   dateRange: DateRange;
@@ -81,6 +92,8 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
               <ChevronDown size={16} className={`transition-transform ${showDatePicker ? 'rotate-180' : ''}`} />
             </button>
 
+            
+
             {/* Dropdown Date Picker */}
             {showDatePicker && (
               <div className="absolute top-full right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-200 p-4 z-50 min-w-[320px] animate-fadeIn">
@@ -144,13 +157,51 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
               </div>
             )}
           </div>
-          <button
+         {/* <button
             onClick={handleLogout}
             className="p-2 bg-red-50 rounded-lg transition-all duration-200 group border border-red-200 hover:border-red-300"
             title="Logout"
           >
             <LogOut className="h-4 w-4 text-red-600 group-hover:text-red-800 transition-colors duration-200" />
-          </button>
+          </button>*/}
+
+          {/* User Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="flex items-center space-x-2 hover:bg-slate-100">
+              <Avatar className="h-8 w-8">
+                <AvatarFallback className="bg-blue-600 text-white">
+                  {user?.clientid?.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div className="text-left">
+                <div className="text-sm font-medium text-slate-800">
+                  {user?.clientid}
+                </div>
+                <div className="text-xs text-slate-500">
+                  {user?.role}
+                </div>
+              </div>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              <User className="mr-2 h-4 w-4" />
+              Profile
+            </DropdownMenuItem>
+            {/*<DropdownMenuItem>
+              <Settings className="mr-2 h-4 w-4" />
+              Settings
+            </DropdownMenuItem>*/}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+              <LogOut className="mr-2 h-4 w-4" />
+              Log out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         </div>
       </div>
     </div>

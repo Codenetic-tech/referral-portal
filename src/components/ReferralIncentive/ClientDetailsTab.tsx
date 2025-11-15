@@ -1,5 +1,5 @@
 // ClientDetailsTab.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -8,7 +8,7 @@ import {
   ColumnDef,
   flexRender,
 } from '@tanstack/react-table';
-import { Search, Filter, Download, Package } from 'lucide-react';
+import { Search, Filter, Download, Package, ChevronRight } from 'lucide-react';
 import { ReferralData } from '@/utils/referral';
 
 interface ClientDetailsTabProps {
@@ -17,6 +17,8 @@ interface ClientDetailsTabProps {
 }
 
 const ClientDetailsTab: React.FC<ClientDetailsTabProps> = ({ data, loading }) => {
+  const [searchValue, setSearchValue] = useState('');
+
   const columns: ColumnDef<ReferralData>[] = [
     {
       accessorKey: 'application_no',
@@ -100,6 +102,16 @@ const ClientDetailsTab: React.FC<ClientDetailsTabProps> = ({ data, loading }) =>
     },
   });
 
+  // Filter data based on search
+  const filteredData = data.filter(item =>
+    item.application_no.toLowerCase().includes(searchValue.toLowerCase())
+  );
+
+  const paginatedData = filteredData.slice(
+    table.getState().pagination.pageIndex * 10,
+    (table.getState().pagination.pageIndex + 1) * 10
+  );
+
   if (loading) {
     return (
       <div className="bg-white rounded-xl shadow-lg p-8 text-center">
@@ -109,35 +121,108 @@ const ClientDetailsTab: React.FC<ClientDetailsTabProps> = ({ data, loading }) =>
     );
   }
 
+  // Mobile Card View
+  const MobileCardView = () => (
+    <div className="space-y-4 lg:hidden">
+      {paginatedData.map((item, index) => {
+        const stage = item.stage;
+        const traded = item.trade === 'TRUE';
+        let stageBgColor = 'bg-gray-100 text-gray-800';
+        
+        if (stage === 'E sign') stageBgColor = 'bg-blue-100 text-blue-800';
+        if (stage === 'Nominee') stageBgColor = 'bg-green-100 text-green-800';
+
+        return (
+          <div
+            key={index}
+            className="bg-white rounded-lg shadow border border-gray-200 p-4 hover:shadow-md transition-shadow"
+          >
+            <div className="flex justify-between items-start mb-3">
+              <div>
+                <div className="text-xs text-gray-500 mb-1">Application No</div>
+                <div className="font-semibold text-gray-900">{item.application_no}</div>
+              </div>
+              <ChevronRight className="text-gray-400" size={20} />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 mb-3">
+              <div>
+                <div className="text-xs text-gray-500 mb-1">Date</div>
+                <div className="text-sm text-gray-900">
+                  {new Date(item.date).toLocaleDateString('en-IN')}
+                </div>
+              </div>
+              <div>
+                <div className="text-xs text-gray-500 mb-1">Mobile</div>
+                <div className="text-sm text-gray-900">{item.masked_mobile}</div>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-2 pt-3 border-t border-gray-100">
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-500">Stage:</span>
+                <span className={`px-2 py-1 rounded-full text-xs font-medium ${stageBgColor}`}>
+                  {stage}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-500">Traded:</span>
+                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                  traded ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                }`}>
+                  {traded ? 'Yes' : 'No'}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-500">Incentive:</span>
+                <span className="px-2 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                  Pending
+                </span>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+
   return (
     <div className="space-y-6">
       {/* Header Actions */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-        </div>
-        <div className="flex gap-3">
-          <div className="relative">
+        <div></div>
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          <div className="relative flex-1 sm:flex-initial">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
             <input
               type="text"
               placeholder="Search applications..."
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              onChange={e => table.getColumn('application_no')?.setFilterValue(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              value={searchValue}
+              onChange={e => {
+                setSearchValue(e.target.value);
+                table.getColumn('application_no')?.setFilterValue(e.target.value);
+              }}
             />
           </div>
-          <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2">
-            <Filter size={16} />
-            Filter
-          </button>
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
-            <Download size={16} />
-            Export
-          </button>
+          <div className="flex gap-3">
+            <button className="flex-1 sm:flex-initial px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">
+              <Filter size={16} />
+              <span className="hidden sm:inline">Filter</span>
+            </button>
+            <button className="flex-1 sm:flex-initial px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+              <Download size={16} />
+              <span className="hidden sm:inline">Export</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+      {/* Mobile Card View */}
+      <MobileCardView />
+
+      {/* Desktop Table View */}
+      <div className="hidden lg:block bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
@@ -198,6 +283,34 @@ const ClientDetailsTab: React.FC<ClientDetailsTabProps> = ({ data, loading }) =>
               Next
             </button>
           </div>
+        </div>
+      </div>
+
+      {/* Mobile Pagination */}
+      <div className="lg:hidden bg-white rounded-lg shadow border border-gray-200 px-4 py-3">
+        <div className="flex items-center justify-between mb-2">
+          <div className="text-sm text-gray-700">
+            Showing {paginatedData.length} of {filteredData.length} results
+          </div>
+        </div>
+        <div className="flex items-center justify-between">
+          <button
+            className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 text-sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </button>
+          <span className="text-sm text-gray-700">
+            Page {table.getState().pagination.pageIndex + 1} of {Math.ceil(filteredData.length / 10)}
+          </span>
+          <button
+            className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 text-sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </button>
         </div>
       </div>
 
