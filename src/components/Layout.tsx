@@ -28,22 +28,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </div>
 
         <div className="flex-1 flex flex-col w-full">
-          {/* Mobile Header with Hamburger Menu */}
-          <div className="lg:hidden sticky top-0 z-50 bg-white border-b border-gray-200 px-4 py-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                  aria-label="Toggle menu"
-                >
-                  {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                </button>
-                <h1 className="text-lg font-semibold text-gray-900">Dashboard</h1>
-              </div>
-              {/* Add mobile header actions here if needed */}
-            </div>
-          </div>
 
           {/* Mobile Slide-out Menu */}
           {mobileMenuOpen && (
