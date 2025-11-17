@@ -1,7 +1,7 @@
 // OverviewTab.tsx
-import React, { useState } from 'react';
+import React from 'react';
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Users, IndianRupee, Package, TrendingUp, CheckCircle, Clock, Activity, ArrowUpRight, Building2, BarChart3, PieChart as PieChartIcon, Smartphone } from 'lucide-react';
+import { Users, IndianRupee, Package, TrendingUp, CheckCircle, Clock, Activity, ArrowUpRight, Building2 } from 'lucide-react';
 import { SummaryData, ReferralData, COLORS } from '@/utils/referral';
 
 interface OverviewTabProps {
@@ -17,8 +17,6 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
   clientDetails,
   ledger
 }) => {
-  const [activeMobileTab, setActiveMobileTab] = useState<'overview' | 'charts'>('overview');
-
   // Chart data for stage distribution
   const stageData = [
     { name: 'E Sign', value: clientDetails.filter(item => item.stage === 'E sign').length },
@@ -35,224 +33,6 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
     { month: 'May', applications: 58, incentives: 16000 },
     { month: 'Jun', applications: 72, incentives: 22000 },
   ];
-
-  // Mobile Tab Navigation
-  const MobileTabNav = () => (
-    <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-10">
-      <div className="flex">
-        <button
-          onClick={() => setActiveMobileTab('overview')}
-          className={`flex-1 flex flex-col items-center py-3 px-2 transition-all duration-200 ${
-            activeMobileTab === 'overview' 
-              ? 'text-blue-600 bg-blue-50' 
-              : 'text-gray-500 hover:text-gray-700'
-          }`}
-        >
-          <Activity size={20} />
-          <span className="text-xs mt-1 font-medium">Overview</span>
-        </button>
-        <button
-          onClick={() => setActiveMobileTab('charts')}
-          className={`flex-1 flex flex-col items-center py-3 px-2 transition-all duration-200 ${
-            activeMobileTab === 'charts' 
-              ? 'text-blue-600 bg-blue-50' 
-              : 'text-gray-500 hover:text-gray-700'
-          }`}
-        >
-          <BarChart3 size={20} />
-          <span className="text-xs mt-1 font-medium">Charts</span>
-        </button>
-      </div>
-    </div>
-  );
-
-  // Mobile Overview View
-  const MobileOverviewView = () => (
-    <div className="lg:hidden pb-20">
-      {/* Quick Stats Bar */}
-      <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4 rounded-xl mb-4">
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="text-lg font-bold">Performance Summary</h2>
-          <TrendingUp size={20} />
-        </div>
-        <p className="text-sm opacity-90">Real-time overview of your referrals</p>
-      </div>
-
-      {/* Compact Stats Grid */}
-      <div className="grid grid-cols-2 gap-3 mb-6">
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
-          <div className="flex items-center justify-between mb-2">
-            <div className="bg-blue-100 p-2 rounded-lg">
-              <Activity size={16} className="text-blue-600" />
-            </div>
-            <span className="text-xs bg-green-100 text-green-600 px-1.5 py-0.5 rounded-full">+12.5%</span>
-          </div>
-          <p className="text-xs text-gray-500 mb-1">Total Apps</p>
-          <p className="text-lg font-bold text-gray-800">{summaryData.totalApplications}</p>
-        </div>
-
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
-          <div className="flex items-center justify-between mb-2">
-            <div className="bg-orange-100 p-2 rounded-lg">
-              <Clock size={16} className="text-orange-600" />
-            </div>
-            <span className="text-xs bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-full">+8.5%</span>
-          </div>
-          <p className="text-xs text-gray-500 mb-1">Pending</p>
-          <p className="text-lg font-bold text-gray-800">{summaryData.pendingIncentives}</p>
-        </div>
-
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
-          <div className="flex items-center justify-between mb-2">
-            <div className="bg-green-100 p-2 rounded-lg">
-              <CheckCircle size={16} className="text-green-600" />
-            </div>
-            <span className="text-xs bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-full">+5.5%</span>
-          </div>
-          <p className="text-xs text-gray-500 mb-1">Paid</p>
-          <p className="text-lg font-bold text-gray-800">{summaryData.paidIncentives}</p>
-        </div>
-
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
-          <div className="flex items-center justify-between mb-2">
-            <div className="bg-purple-100 p-2 rounded-lg">
-              <IndianRupee size={16} className="text-purple-600" />
-            </div>
-            <span className="text-xs bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-full">+8.5%</span>
-          </div>
-          <p className="text-xs text-gray-500 mb-1">Total ₹</p>
-          <p className="text-lg font-bold text-gray-800">₹{summaryData.totalIncentiveAmount}</p>
-        </div>
-      </div>
-
-      {/* Mini Charts Preview */}
-      <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 mb-4">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="font-semibold text-gray-800">Quick Insights</h3>
-          <button 
-            onClick={() => setActiveMobileTab('charts')}
-            className="text-blue-600 text-sm font-medium"
-          >
-            View All
-          </button>
-        </div>
-        
-        <div className="grid grid-cols-2 gap-4">
-          <div className="text-center">
-            <div className="h-20 mx-auto mb-2">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={[stageData[0]]}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={20}
-                    outerRadius={35}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    <Cell fill={COLORS[0]} />
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <p className="text-xs text-gray-600">E-Sign</p>
-            <p className="text-sm font-bold">{stageData[0].value}</p>
-          </div>
-
-          <div className="text-center">
-            <div className="h-20 mx-auto mb-2">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={[monthlyData[monthlyData.length - 1]]}>
-                  <Bar dataKey="applications" fill="#6366f1" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-            <p className="text-xs text-gray-600">Current Month</p>
-            <p className="text-sm font-bold">{monthlyData[monthlyData.length - 1].applications}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Performance Indicator */}
-      <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-100 rounded-xl p-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium text-gray-800">Overall Performance</p>
-            <p className="text-xs text-gray-600">Better than last month</p>
-          </div>
-          <div className="bg-green-100 text-green-600 px-3 py-1 rounded-full text-sm font-medium">
-            +15.2%
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  // Mobile Charts View
-  const MobileChartsView = () => (
-    <div className="lg:hidden pb-20 space-y-6">
-      {/* Back to Overview */}
-      <button 
-        onClick={() => setActiveMobileTab('overview')}
-        className="flex items-center gap-2 text-blue-600 font-medium mb-4"
-      >
-        <ArrowUpRight size={16} className="rotate-180" />
-        Back to Overview
-      </button>
-
-      {/* Stage Distribution Chart */}
-      <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-        <div className="flex items-center gap-2 mb-4">
-          <PieChartIcon size={20} className="text-blue-600" />
-          <h3 className="font-semibold text-gray-800">Stage Distribution</h3>
-        </div>
-        <div className="h-64">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={stageData}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                outerRadius={80}
-                fill="#8884d8"
-                dataKey="value"
-              >
-                {stageData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-
-      {/* Monthly Trend Chart */}
-      <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-        <div className="flex items-center gap-2 mb-4">
-          <BarChart3 size={20} className="text-blue-600" />
-          <h3 className="font-semibold text-gray-800">Monthly Trends</h3>
-        </div>
-        <div className="h-64">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={monthlyData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="applications" fill="#6366f1" name="Applications" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="incentives" fill="#10b981" name="Incentives (₹)" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-    </div>
-  );
 
   return (
     <div className="space-y-6">
@@ -375,14 +155,120 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
         )}
       </div>
 
-      {/* Mobile View */}
-      <div className="lg:hidden">
-        {activeMobileTab === 'overview' && <MobileOverviewView />}
-        {activeMobileTab === 'charts' && <MobileChartsView />}
-      </div>
+      {/* Mobile View - Only Overview Content (No Tab Navigation) */}
+      <div className="lg:hidden pb-20">
+        {/* Quick Stats Bar */}
+        <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4 rounded-xl mb-4">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-lg font-bold">Performance Summary</h2>
+            <TrendingUp size={20} />
+          </div>
+          <p className="text-sm opacity-90">Real-time overview of your referrals</p>
+        </div>
 
-      {/* Mobile Tab Navigation */}
-      <MobileTabNav />
+        {/* Compact Stats Grid */}
+        <div className="grid grid-cols-2 gap-3 mb-6">
+          <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+            <div className="flex items-center justify-between mb-2">
+              <div className="bg-blue-100 p-2 rounded-lg">
+                <Activity size={16} className="text-blue-600" />
+              </div>
+              <span className="text-xs bg-green-100 text-green-600 px-1.5 py-0.5 rounded-full">+12.5%</span>
+            </div>
+            <p className="text-xs text-gray-500 mb-1">Total Apps</p>
+            <p className="text-lg font-bold text-gray-800">{summaryData.totalApplications}</p>
+          </div>
+
+          <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+            <div className="flex items-center justify-between mb-2">
+              <div className="bg-orange-100 p-2 rounded-lg">
+                <Clock size={16} className="text-orange-600" />
+              </div>
+              <span className="text-xs bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-full">+8.5%</span>
+            </div>
+            <p className="text-xs text-gray-500 mb-1">Pending</p>
+            <p className="text-lg font-bold text-gray-800">{summaryData.pendingIncentives}</p>
+          </div>
+
+          <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+            <div className="flex items-center justify-between mb-2">
+              <div className="bg-green-100 p-2 rounded-lg">
+                <CheckCircle size={16} className="text-green-600" />
+              </div>
+              <span className="text-xs bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-full">+5.5%</span>
+            </div>
+            <p className="text-xs text-gray-500 mb-1">Paid</p>
+            <p className="text-lg font-bold text-gray-800">{summaryData.paidIncentives}</p>
+          </div>
+
+          <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+            <div className="flex items-center justify-between mb-2">
+              <div className="bg-purple-100 p-2 rounded-lg">
+                <IndianRupee size={16} className="text-purple-600" />
+              </div>
+              <span className="text-xs bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-full">+8.5%</span>
+            </div>
+            <p className="text-xs text-gray-500 mb-1">Total ₹</p>
+            <p className="text-lg font-bold text-gray-800">₹{summaryData.totalIncentiveAmount}</p>
+          </div>
+        </div>
+
+        {/* Mini Charts Preview - Static without navigation */}
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 mb-4">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold text-gray-800">Quick Insights</h3>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div className="text-center">
+              <div className="h-20 mx-auto mb-2">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={[stageData[0]]}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={20}
+                      outerRadius={35}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      <Cell fill={COLORS[0]} />
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <p className="text-xs text-gray-600">E-Sign</p>
+              <p className="text-sm font-bold">{stageData[0].value}</p>
+            </div>
+
+            <div className="text-center">
+              <div className="h-20 mx-auto mb-2">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={[monthlyData[monthlyData.length - 1]]}>
+                    <Bar dataKey="applications" fill="#6366f1" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+              <p className="text-xs text-gray-600">Current Month</p>
+              <p className="text-sm font-bold">{monthlyData[monthlyData.length - 1].applications}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Performance Indicator */}
+        <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-100 rounded-xl p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-800">Overall Performance</p>
+              <p className="text-xs text-gray-600">Better than last month</p>
+            </div>
+            <div className="bg-green-100 text-green-600 px-3 py-1 rounded-full text-sm font-medium">
+              +15.2%
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

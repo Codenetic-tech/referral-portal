@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from './AppSidebar';
 import Header from './Header';
-import { Menu, X, Home, Users, BarChart3, Settings, LogOut } from 'lucide-react';
+import { Menu, X, Home, Users, BarChart3, Settings, LogOut, Activity, Package } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -13,6 +14,8 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { logout } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
     logout();
@@ -22,8 +25,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     });
   };
 
-  // Mobile Navigation Items (customize based on your routes)
-  const mobileNavItems = [
+  // Check if we're on the referral page to show referral tabs
+  const isReferralPage = location.pathname.includes('/dashboard');
+
+  // Regular Navigation Items
+  const regularNavItems = [
     { icon: Home, label: 'Home', href: '/' },
     { icon: Users, label: 'Clients', href: '/' },
     { icon: BarChart3, label: 'Ledger', href: '/' },
@@ -34,6 +40,37 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       className: 'text-red-600 hover:text-red-700'
     },
   ];
+
+  // Referral Page Navigation Items
+  const referralNavItems = [
+    { 
+      icon: Activity, 
+      label: 'Overview', 
+      onClick: () => navigate('/dashboard?tab=overview'),
+      active: location.search.includes('overview') || !location.search.includes('tab=')
+    },
+    { 
+      icon: Users, 
+      label: 'Clients', 
+      onClick: () => navigate('/dashboard?tab=client-details'),
+      active: location.search.includes('client-details')
+    },
+    { 
+      icon: Package, 
+      label: 'Ledger', 
+      onClick: () => navigate('/dashboard?tab=ledger'),
+      active: location.search.includes('ledger')
+    },
+    { 
+      icon: LogOut, 
+      label: 'Logout', 
+      onClick: handleLogout,
+      className: 'text-red-600 hover:text-red-700'
+    },
+  ];
+
+  // Use referral nav items when on referral page, otherwise use regular nav
+  const mobileNavItems = isReferralPage ? referralNavItems : regularNavItems;
 
   return (
     <SidebarProvider>
@@ -78,10 +115,23 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                             item.onClick?.();
                             setMobileMenuOpen(false);
                           }}
-                          className={`flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors w-full text-left ${item.className || ''}`}
+                          className={`flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors w-full text-left ${
+                            item.className || ''
+                          } ${
+                            (item as any).active ? 'bg-blue-50 text-blue-600' : ''
+                          }`}
                         >
-                          <item.icon size={20} className={item.className?.includes('red') ? 'text-red-600' : 'text-gray-600'} />
-                          <span className={item.className?.includes('red') ? 'text-red-600 font-medium' : 'text-gray-900 font-medium'}>{item.label}</span>
+                          <item.icon 
+                            size={20} 
+                            className={
+                              item.className?.includes('red') ? 'text-red-600' : 
+                              (item as any).active ? 'text-blue-600' : 'text-gray-600'
+                            } 
+                          />
+                          <span className={
+                            item.className?.includes('red') ? 'text-red-600 font-medium' : 
+                            (item as any).active ? 'text-blue-600 font-medium' : 'text-gray-900 font-medium'
+                          }>{item.label}</span>
                         </button>
                       );
                     }
@@ -122,13 +172,23 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     <button
                       key={item.label}
                       onClick={item.onClick}
-                      className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors min-w-0 flex-1 ${item.className || ''}`}
+                      className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors min-w-0 flex-1 ${
+                        item.className || ''
+                      } ${
+                        (item as any).active ? 'bg-blue-50 text-blue-600' : ''
+                      }`}
                     >
                       <item.icon 
                         size={20} 
-                        className={item.className?.includes('red') ? 'text-red-600' : 'text-gray-600'} 
+                        className={
+                          item.className?.includes('red') ? 'text-red-600' : 
+                          (item as any).active ? 'text-blue-600' : 'text-gray-600'
+                        } 
                       />
-                      <span className={`text-xs truncate ${item.className?.includes('red') ? 'text-red-600' : 'text-gray-600'}`}>
+                      <span className={`text-xs truncate ${
+                        item.className?.includes('red') ? 'text-red-600' : 
+                        (item as any).active ? 'text-blue-600' : 'text-gray-600'
+                      }`}>
                         {item.label}
                       </span>
                     </button>

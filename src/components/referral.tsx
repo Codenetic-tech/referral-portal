@@ -20,9 +20,11 @@ import OverviewTab from '@/components/ReferralIncentive/OverviewTab';
 import ClientDetailsTab from '@/components/ReferralIncentive/ClientDetailsTab';
 import LedgerTab from '@/components/ReferralIncentive/LedgerTab';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSearchParams } from 'react-router-dom';
 
 const ReferralIncentive: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('overview');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get('tab') || 'overview';
   const [dateRange, setDateRange] = useState<DateRange>({
     start: '',
     end: ''
@@ -34,9 +36,9 @@ const ReferralIncentive: React.FC = () => {
 
   const { user } = useAuth();
   
-    // Get actual user credentials from auth context
-    const clientid = user?.clientid || '';
-    const token = user?.token || '';
+  // Get actual user credentials from auth context
+  const clientid = user?.clientid || '';
+  const token = user?.token || '';
 
   // Initialize with empty/zero data
   const [summaryData, setSummaryData] = useState<SummaryData>({
@@ -153,15 +155,15 @@ const ReferralIncentive: React.FC = () => {
           loading={loading}
         />
 
-        {/* Tabs */}
-        <div className="bg-white rounded-xl shadow-lg shadow-blue-50 mb-6 border border-gray-100 overflow-x-auto">
+        {/* Desktop Tabs - Hidden on mobile */}
+        <div className="hidden lg:block bg-white rounded-xl shadow-lg shadow-blue-50 mb-6 border border-gray-100 overflow-x-auto">
           <div className="flex">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               return (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => setSearchParams({ tab: tab.id })}
                   className={`flex items-center gap-2 px-6 py-4 text-sm font-medium transition-all whitespace-nowrap ${
                     activeTab === tab.id
                       ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
