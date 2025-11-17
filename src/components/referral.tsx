@@ -1,7 +1,7 @@
-// ReferralIncentive.tsx
+// ReferralIncentive.tsx (updated)
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Calendar, Users, IndianRupee, Package, TrendingUp, Activity, ArrowUpRight, Download, Filter, Search, RefreshCw } from 'lucide-react';
+import { Calendar, Users, IndianRupee, Package, TrendingUp, Activity, ArrowUpRight, Download, Filter, Search, RefreshCw, User } from 'lucide-react';
 
 import { 
   ReferralData, 
@@ -19,6 +19,7 @@ import DateRangePicker from '@/components/ManagementReport/DateRangePicker';
 import OverviewTab from '@/components/ReferralIncentive/OverviewTab';
 import ClientDetailsTab from '@/components/ReferralIncentive/ClientDetailsTab';
 import LedgerTab from '@/components/ReferralIncentive/LedgerTab';
+import ProfileTab from '@/components/ReferralIncentive/ProfileTab'; // Add this import
 import { useAuth } from '@/contexts/AuthContext';
 import { useSearchParams } from 'react-router-dom';
 
@@ -125,10 +126,12 @@ const ReferralIncentive: React.FC = () => {
     }
   };
 
+  // Update tabs to include Profile
   const tabs: Tab[] = [
     { id: 'overview', label: 'Overview', icon: Activity },
     { id: 'client-details', label: 'Client Details', icon: Users },
-    { id: 'ledger', label: 'Ledger', icon: Package }
+    { id: 'ledger', label: 'Ledger', icon: Package },
+    { id: 'profile', label: 'Profile', icon: User } // Add Profile tab
   ];
 
   // Loading overlay component
@@ -197,6 +200,11 @@ const ReferralIncentive: React.FC = () => {
           {activeTab === 'ledger' && (
             <LedgerTab 
               data={ledger}
+              loading={loading}
+            />
+          )}
+          {activeTab === 'profile' && (
+            <ProfileTab 
               loading={loading}
             />
           )}

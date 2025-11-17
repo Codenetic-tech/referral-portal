@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from './AppSidebar';
 import Header from './Header';
-import { Menu, X, Home, Users, BarChart3, Settings, LogOut, Activity, Package } from 'lucide-react';
+import { Menu, X, Home, Users, BarChart3, Settings, LogOut, Activity, Package, Share2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -33,6 +33,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { icon: Home, label: 'Home', href: '/' },
     { icon: Users, label: 'Clients', href: '/' },
     { icon: BarChart3, label: 'Ledger', href: '/' },
+    { icon: Share2, label: 'link', href: '/' },
     { 
       icon: LogOut, 
       label: 'Logout', 
@@ -59,6 +60,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       icon: Package, 
       label: 'Ledger', 
       onClick: () => navigate('/dashboard?tab=ledger'),
+      active: location.search.includes('ledger')
+    },
+    { 
+      icon: Share2, 
+      label: 'link', 
+      onClick: () => navigate('/dashboard?tab=profile'),
       active: location.search.includes('ledger')
     },
     { 
