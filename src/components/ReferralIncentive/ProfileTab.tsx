@@ -1,6 +1,25 @@
 // ProfileTab.tsx
 import React, { useState } from 'react';
-import { Share2, Link, Copy, Check, Smartphone, Globe, ExternalLink } from 'lucide-react';
+import { 
+  Share2, 
+  Link, 
+  Copy, 
+  Check, 
+  Smartphone, 
+  Globe, 
+  ExternalLink,
+  ChevronsUpDown,
+  CheckIcon,
+  MessageCircle,
+  Facebook,
+  Instagram,
+  Twitter,
+  Linkedin,
+  Send,
+  MessageSquare,
+  Mail,
+  Link2
+} from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface ProfileTabProps {
@@ -21,18 +40,22 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ loading }) => {
   const [isCopied, setIsCopied] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
 
   const socialMediaSources = [
-    { id: 'WHATSAPP', name: 'WhatsApp', icon: '💬' },
-    { id: 'FACEBOOK', name: 'Facebook', icon: '📘' },
-    { id: 'INSTAGRAM', name: 'Instagram', icon: '📷' },
-    { id: 'TWITTER', name: 'Twitter', icon: '🐦' },
-    { id: 'LINKEDIN', name: 'LinkedIn', icon: '💼' },
-    { id: 'TELEGRAM', name: 'Telegram', icon: '✈️' },
-    { id: 'SMS', name: 'SMS', icon: '📱' },
-    { id: 'EMAIL', name: 'Email', icon: '📧' },
-    { id: 'OTHER', name: 'Other', icon: '🔗' },
+    { id: 'WHATSAPP', name: 'WhatsApp', icon: MessageCircle },
+    { id: 'FACEBOOK', name: 'Facebook', icon: Facebook },
+    { id: 'INSTAGRAM', name: 'Instagram', icon: Instagram },
+    { id: 'TWITTER', name: 'Twitter', icon: Twitter },
+    { id: 'LINKEDIN', name: 'LinkedIn', icon: Linkedin },
+    { id: 'TELEGRAM', name: 'Telegram', icon: Send },
+    { id: 'SMS', name: 'SMS', icon: MessageSquare },
+    { id: 'EMAIL', name: 'Email', icon: Mail },
+    { id: 'OTHER', name: 'Other', icon: Link2 },
   ];
+
+  const selectedSourceData = socialMediaSources.find(source => source.id === selectedSource);
+  const SelectedIcon = selectedSourceData?.icon || Link2;
 
   const generateReferralLink = async () => {
     if (!user?.clientid) {
@@ -131,16 +154,6 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ loading }) => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
-        <div className="flex items-center gap-3 mb-2">
-          <Share2 className="text-blue-600" size={24} />
-          <h2 className="text-xl font-semibold text-gray-900">Generate Referral Link</h2>
-        </div>
-        <p className="text-gray-600">
-          Create personalized referral links to share on social media and track your campaign performance.
-        </p>
-      </div>
 
       {/* Error Message */}
       {error && (
@@ -157,26 +170,51 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ loading }) => {
         <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Create Your Link</h3>
           
-          {/* Social Media Source Selection */}
+          {/* Social Media Source Selection - Combobox */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-3">
               Select Platform
             </label>
-            <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-3 gap-2">
-              {socialMediaSources.map((source) => (
-                <button
-                  key={source.id}
-                  onClick={() => setSelectedSource(source.id)}
-                  className={`p-3 rounded-lg border-2 transition-all ${
-                    selectedSource === source.id
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <div className="text-2xl mb-1">{source.icon}</div>
-                  <div className="text-xs font-medium text-gray-700">{source.name}</div>
-                </button>
-              ))}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setOpen(!open)}
+                className="w-full flex items-center justify-between px-4 py-3 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <div className="flex items-center gap-3">
+                  <SelectedIcon className="h-5 w-5 text-gray-600" />
+                  <span className="text-gray-700">{selectedSourceData?.name}</span>
+                </div>
+                <ChevronsUpDown className="h-4 w-4 opacity-50" />
+              </button>
+
+              {open && (
+                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                  <div className="p-1">
+                    {socialMediaSources.map((source) => {
+                      const IconComponent = source.icon;
+                      return (
+                        <button
+                          key={source.id}
+                          className={`w-full flex items-center gap-3 px-3 py-2 text-left rounded-md hover:bg-gray-100 ${
+                            selectedSource === source.id ? 'bg-blue-50 text-blue-600' : 'text-gray-700'
+                          }`}
+                          onClick={() => {
+                            setSelectedSource(source.id);
+                            setOpen(false);
+                          }}
+                        >
+                          <IconComponent className="h-5 w-5" />
+                          <span className="flex-1">{source.name}</span>
+                          {selectedSource === source.id && (
+                            <CheckIcon className="h-4 w-4 text-blue-600" />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
