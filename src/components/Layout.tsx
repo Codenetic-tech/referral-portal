@@ -26,7 +26,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const mobileNavItems = [
     { icon: Home, label: 'Home', href: '/' },
     { icon: Users, label: 'Clients', href: '/' },
-    { icon: BarChart3, label: 'Analytics', href: '/' },
+    { icon: BarChart3, label: 'Ledger', href: '/' },
     { 
       icon: LogOut, 
       label: 'Logout', 

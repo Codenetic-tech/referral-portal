@@ -210,13 +210,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    // Clear server session if possible, but don't wait for it
-    fetch('https://hrms-db.gopocket.in/api/method/logout', {
-      method: 'POST',
-      credentials: 'include',
-    }).catch(console.error);
-    
+  const logout = () => {   
     // Immediately clear local data
     clearAuthData();
   };

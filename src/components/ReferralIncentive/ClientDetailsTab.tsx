@@ -206,14 +206,14 @@ const ClientDetailsTab: React.FC<ClientDetailsTabProps> = ({ data, loading }) =>
             />
           </div>
           <div className="flex gap-3">
-            <button className="flex-1 sm:flex-initial px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">
+           {/* <button className="flex-1 sm:flex-initial px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">
               <Filter size={16} />
               <span className="hidden sm:inline">Filter</span>
             </button>
             <button className="flex-1 sm:flex-initial px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
               <Download size={16} />
               <span className="hidden sm:inline">Export</span>
-            </button>
+            </button> */}
           </div>
         </div>
       </div>
