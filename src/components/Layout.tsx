@@ -66,7 +66,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       icon: Share2, 
       label: 'link', 
       onClick: () => navigate('/dashboard?tab=profile'),
-      active: location.search.includes('ledger')
+      active: location.search.includes('profile')
     },
     { 
       icon: LogOut, 

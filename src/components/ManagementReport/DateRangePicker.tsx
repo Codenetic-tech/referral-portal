@@ -15,6 +15,7 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Search, User, Settings, Bell } from 'lucide-react';
+import { useNavigate } from "react-router-dom";
 
 interface DateRangePickerProps {
   dateRange: DateRange;
@@ -43,6 +44,8 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
     setDateRange(newDateRange);
     setShowDatePicker(false);
   };
+
+  const navigate = useNavigate();
 
   return (
     <div className="bg-white rounded-xl lg:rounded-2xl shadow-md lg:shadow-lg lg:shadow-blue-50 p-4 lg:p-6 mb-4 lg:mb-6 border border-gray-100 lg:hover:shadow-xl transition-all duration-300">
@@ -226,7 +229,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/dashboard?tab=profile')}>
                     <User className="mr-2 h-4 w-4" />
                     Profile
                   </DropdownMenuItem>
