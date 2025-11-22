@@ -1,14 +1,16 @@
 // ClientDetailsTab.tsx
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
   ColumnDef,
   flexRender,
+  SortingState,
 } from '@tanstack/react-table';
-import { Search, Filter, Download, Package, ChevronRight } from 'lucide-react';
+import { Search, Filter, Download, Package, ChevronRight, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import { ReferralData } from '@/utils/referral';
 
 interface ClientDetailsTabProps {
@@ -18,11 +20,31 @@ interface ClientDetailsTabProps {
 
 const ClientDetailsTab: React.FC<ClientDetailsTabProps> = ({ data, loading }) => {
   const [searchValue, setSearchValue] = useState('');
+  const [sorting, setSorting] = useState<SortingState>([{ id: 'date', desc: true }]);
+
+  // Sort and filter data
+  const processedData = useMemo(() => {
+    let filtered = data.filter(item =>
+      item.application_no.toLowerCase().includes(searchValue.toLowerCase())
+    );
+
+    return filtered;
+  }, [data, searchValue]);
 
   const columns: ColumnDef<ReferralData>[] = [
     {
       accessorKey: 'application_no',
-      header: 'Application No',
+      header: ({ column }) => {
+        return (
+          <button
+            className="flex items-center gap-1 hover:bg-gray-100 px-2 py-1 rounded"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Application No
+            <ArrowUpDown size={14} />
+          </button>
+        );
+      },
       cell: ({ row }) => (
         <div className="font-medium text-gray-900">
           {row.getValue('application_no')}
@@ -31,7 +53,17 @@ const ClientDetailsTab: React.FC<ClientDetailsTabProps> = ({ data, loading }) =>
     },
     {
       accessorKey: 'date',
-      header: 'Date',
+      header: ({ column }) => {
+        return (
+          <button
+            className="flex items-center gap-1 hover:bg-gray-100 px-2 py-1 rounded"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Date
+            {column.getIsSorted() === 'desc' ? <ArrowDown size={14} /> : <ArrowUp size={14} />}
+          </button>
+        );
+      },
       cell: ({ row }) => (
         <div className="text-gray-600">
           {new Date(row.getValue('date')).toLocaleDateString('en-IN')}
@@ -40,7 +72,17 @@ const ClientDetailsTab: React.FC<ClientDetailsTabProps> = ({ data, loading }) =>
     },
     {
       accessorKey: 'masked_mobile',
-      header: 'Mobile',
+      header: ({ column }) => {
+        return (
+          <button
+            className="flex items-center gap-1 hover:bg-gray-100 px-2 py-1 rounded"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Mobile
+            <ArrowUpDown size={14} />
+          </button>
+        );
+      },
       cell: ({ row }) => (
         <div className="text-gray-600">
           {row.getValue('masked_mobile')}
@@ -49,7 +91,17 @@ const ClientDetailsTab: React.FC<ClientDetailsTabProps> = ({ data, loading }) =>
     },
     {
       accessorKey: 'stage',
-      header: 'Stage',
+      header: ({ column }) => {
+        return (
+          <button
+            className="flex items-center gap-1 hover:bg-gray-100 px-2 py-1 rounded"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Stage
+            <ArrowUpDown size={14} />
+          </button>
+        );
+      },
       cell: ({ row }) => {
         const stage = row.getValue('stage') as string;
         let bgColor = 'bg-gray-100 text-gray-800';
@@ -66,7 +118,17 @@ const ClientDetailsTab: React.FC<ClientDetailsTabProps> = ({ data, loading }) =>
     },
     {
       accessorKey: 'trade',
-      header: 'Traded',
+      header: ({ column }) => {
+        return (
+          <button
+            className="flex items-center gap-1 hover:bg-gray-100 px-2 py-1 rounded"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Traded
+            <ArrowUpDown size={14} />
+          </button>
+        );
+      },
       cell: ({ row }) => {
         const traded = row.getValue('trade') === 'TRUE';
         return (
@@ -80,7 +142,17 @@ const ClientDetailsTab: React.FC<ClientDetailsTabProps> = ({ data, loading }) =>
     },
     {
       accessorKey: 'incentive_paid',
-      header: 'Incentive Status',
+      header: ({ column }) => {
+        return (
+          <button
+            className="flex items-center gap-1 hover:bg-gray-100 px-2 py-1 rounded"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Incentive Status
+            <ArrowUpDown size={14} />
+          </button>
+        );
+      },
       cell: ({ row }) => (
         <span className="px-2 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
           Pending
@@ -90,27 +162,23 @@ const ClientDetailsTab: React.FC<ClientDetailsTabProps> = ({ data, loading }) =>
   ];
 
   const table = useReactTable({
-    data,
+    data: processedData,
     columns,
+    state: {
+      sorting,
+    },
+    onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     initialState: {
       pagination: {
         pageSize: 10,
       },
+      sorting: [{ id: 'date', desc: true }], // Recent records first by default
     },
   });
-
-  // Filter data based on search
-  const filteredData = data.filter(item =>
-    item.application_no.toLowerCase().includes(searchValue.toLowerCase())
-  );
-
-  const paginatedData = filteredData.slice(
-    table.getState().pagination.pageIndex * 10,
-    (table.getState().pagination.pageIndex + 1) * 10
-  );
 
   if (loading) {
     return (
@@ -124,7 +192,8 @@ const ClientDetailsTab: React.FC<ClientDetailsTabProps> = ({ data, loading }) =>
   // Mobile Card View
   const MobileCardView = () => (
     <div className="space-y-4 lg:hidden">
-      {paginatedData.map((item, index) => {
+      {table.getRowModel().rows.map((row, index) => {
+        const item = row.original;
         const stage = item.stage;
         const traded = item.trade === 'TRUE';
         let stageBgColor = 'bg-gray-100 text-gray-800';
@@ -262,7 +331,7 @@ const ClientDetailsTab: React.FC<ClientDetailsTabProps> = ({ data, loading }) =>
         {/* Pagination */}
         <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
           <div className="text-sm text-gray-700">
-            Showing {table.getRowModel().rows.length} of {data.length} results
+            Showing {table.getRowModel().rows.length} of {table.getFilteredRowModel().rows.length} results
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -290,7 +359,7 @@ const ClientDetailsTab: React.FC<ClientDetailsTabProps> = ({ data, loading }) =>
       <div className="lg:hidden bg-white rounded-lg shadow border border-gray-200 px-4 py-3">
         <div className="flex items-center justify-between mb-2">
           <div className="text-sm text-gray-700">
-            Showing {paginatedData.length} of {filteredData.length} results
+            Showing {table.getRowModel().rows.length} of {table.getFilteredRowModel().rows.length} results
           </div>
         </div>
         <div className="flex items-center justify-between">
@@ -302,7 +371,7 @@ const ClientDetailsTab: React.FC<ClientDetailsTabProps> = ({ data, loading }) =>
             Previous
           </button>
           <span className="text-sm text-gray-700">
-            Page {table.getState().pagination.pageIndex + 1} of {Math.ceil(filteredData.length / 10)}
+            Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
           </span>
           <button
             className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 text-sm"
