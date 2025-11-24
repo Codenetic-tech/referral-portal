@@ -117,6 +117,44 @@ const ClientDetailsTab: React.FC<ClientDetailsTabProps> = ({ data, loading }) =>
       },
     },
     {
+      accessorKey: 'source',
+      header: ({ column }) => {
+        return (
+          <button
+            className="flex items-center gap-1 hover:bg-gray-100 px-2 py-1 rounded"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            source
+            <ArrowUpDown size={14} />
+          </button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="text-gray-600">
+          {row.getValue('source')}
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'tag',
+      header: ({ column }) => {
+        return (
+          <button
+            className="flex items-center gap-1 hover:bg-gray-100 px-2 py-1 rounded"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Tag
+            <ArrowUpDown size={14} />
+          </button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="text-gray-600">
+          {row.getValue('tag')}
+        </div>
+      ),
+    },
+    {
       accessorKey: 'trade',
       header: ({ column }) => {
         return (
@@ -224,6 +262,16 @@ const ClientDetailsTab: React.FC<ClientDetailsTabProps> = ({ data, loading }) =>
               <div>
                 <div className="text-xs text-gray-500 mb-1">Mobile</div>
                 <div className="text-sm text-gray-900">{item.masked_mobile}</div>
+              </div>
+              {/* Added Source Field */}
+              <div>
+                <div className="text-xs text-gray-500 mb-1">Source</div>
+                <div className="text-sm text-gray-900">{item.source}</div>
+              </div>
+              {/* Added Tag Field */}
+              <div>
+                <div className="text-xs text-gray-500 mb-1">Tag</div>
+                <div className="text-sm text-gray-900">{item.tag}</div>
               </div>
             </div>
 

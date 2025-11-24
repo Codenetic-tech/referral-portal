@@ -8,6 +8,8 @@ export interface ReferralData {
   incentive_paid: string;
   incentive_paid_date: string | null;
   amount: string | null;
+  source: string | null;
+  tag: string | null;
 }
 
 export interface ApiResponse {
