@@ -84,7 +84,12 @@ const ReferralIncentive: React.FC = () => {
     setError(null);
     
     try {
-      const response = await fetch('/api/method/crm.api.referral.handle_referral_webhook', {
+
+        // Use environment variable for API base URL
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+    const apiUrl = `${API_BASE_URL}/api/method/crm.api.referral.handle_referral_webhook`;
+
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

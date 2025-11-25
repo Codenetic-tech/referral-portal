@@ -105,8 +105,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (employeeId: string, password: string): Promise<void> => {
     setIsLoading(true);
     try {
-      // Make login request to n8n webhook
-      const loginResponse = await fetch('/api/method/crm.api.referral.handle_referral_webhook', {
+
+      // Use environment variable for API base URL
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+    const apiUrl = `${API_BASE_URL}/api/method/crm.api.referral.handle_referral_webhook`;
+      
+      const loginResponse = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
