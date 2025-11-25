@@ -27,9 +27,14 @@ interface ProfileTabProps {
 }
 
 interface ShortLinkResponse {
-  status: number;
-  reason: string;
-  shortLink: string;
+  message: {
+    status: string;
+    data: {
+      status: number;
+      reason: string;
+      shortLink: string;
+    };
+  };
 }
 
 const ProfileTab: React.FC<ProfileTabProps> = ({ loading }) => {
@@ -70,11 +75,12 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ loading }) => {
       const longLink = `https://www.gopocket.in/open-account-call-back?refer=${user.clientid}&src=${selectedSource}&tag=${encodeURIComponent(campaignTag)}`;
       
       // Send to webhook to get short link
-      const response = await fetch('https://n8n.gopocket.in/webhook/referral', {
+      const response = await fetch('/api/method/crm.api.referral.handle_referral_webhook', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        mode: 'cors',
         body: JSON.stringify({
           source: 'referral',
           link: longLink,
@@ -87,12 +93,13 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ loading }) => {
         throw new Error('Failed to generate short link');
       }
 
-      const data: ShortLinkResponse[] = await response.json();
+      const data: ShortLinkResponse = await response.json();
       
-      if (data && data[0] && data[0].status === 1) {
-        setShortLink(data[0].shortLink);
+      // Updated to handle the nested response structure
+      if (data.message && data.message.data && data.message.data.status === 1) {
+        setShortLink(data.message.data.shortLink);
       } else {
-        throw new Error(data[0]?.reason || 'Failed to generate short link');
+        throw new Error(data.message?.data?.reason || 'Failed to generate short link');
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An error occurred while generating the link';

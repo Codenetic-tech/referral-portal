@@ -106,11 +106,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     try {
       // Make login request to n8n webhook
-      const loginResponse = await fetch('https://n8n.gopocket.in/webhook/referral', {
+      const loginResponse = await fetch('/api/method/crm.api.referral.handle_referral_webhook', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        mode: 'cors',
         body: JSON.stringify({
           usr: employeeId,
           pwd: password
@@ -120,25 +121,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const responseData = await loginResponse.json();
       console.log('Login response:', responseData);
 
+      // Handle the new response format
+      if (!responseData.message) {
+        throw new Error('Invalid response from server');
+      }
+
+      const { message } = responseData;
+
       // Handle failed login response
-      if (Array.isArray(responseData) && responseData.length > 0) {
-        const firstItem = responseData[0];
-        if (firstItem.status === "FAILED") {
-          throw new Error('Wrong Backoffice password');
-        }
+      if (message.status === "error") {
+        const errorMessage = message.message || 'Authentication failed. Please check your Client Code & Backoffice password.';
       }
 
-      if (!loginResponse.ok) {
-        const errorMessage = responseData.message || responseData.exc || responseData.error || `Authentication failed with status ${loginResponse.status}`;
-        throw new Error(errorMessage);
+      if (message.status !== "success" || !message.data) {
+        throw new Error('Authentication failed. Please check your Client Code & Backoffice password.');
       }
 
-      if (responseData.exc) {
-        throw new Error('Invalid employee ID or password');
-      }
-
-      // Extract login data from response (could be array or object)
-      const loginData = Array.isArray(responseData) ? responseData[0] : responseData;
+      // Extract login data from success response
+      const loginData = message.data;
 
       // Check if we have the required data in the response
       if (!loginData.token || !loginData.role || !loginData.clientid) {
@@ -155,6 +155,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         userRole = 'manager';
       } else if (responseRole === 'hr') {
         userRole = 'hr';
+      } else if (responseRole === 'client') {
+        userRole = 'employee'; // Map 'client' role to 'employee'
       }
 
       // Create user data from the API response
@@ -164,7 +166,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         email: '',
         firstName: '',
         lastName: '',
-        role: loginData.role,
+        role: userRole,
         companyId: 'gopocket',
         avatar: '/lovable-uploads/e80701e6-7295-455c-a88c-e3c4a1baad9b.png',
         isActive: true,

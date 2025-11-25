@@ -12,8 +12,13 @@ export interface ReferralData {
   tag: string | null;
 }
 
+// Update ApiResponse interface to match new structure
 export interface ApiResponse {
-  message: ReferralData[];
+  message: {
+    status: string;
+    data: ReferralData[];
+    count: number;
+  };
 }
 
 export interface SummaryData {

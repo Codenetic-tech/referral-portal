@@ -19,7 +19,7 @@ import DateRangePicker from '@/components/ManagementReport/DateRangePicker';
 import OverviewTab from '@/components/ReferralIncentive/OverviewTab';
 import ClientDetailsTab from '@/components/ReferralIncentive/ClientDetailsTab';
 import LedgerTab from '@/components/ReferralIncentive/LedgerTab';
-import ProfileTab from '@/components/ReferralIncentive/ProfileTab'; // Add this import
+import ProfileTab from '@/components/ReferralIncentive/ProfileTab';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSearchParams } from 'react-router-dom';
 
@@ -84,11 +84,12 @@ const ReferralIncentive: React.FC = () => {
     setError(null);
     
     try {
-      const response = await fetch('https://n8n.gopocket.in/webhook/referral', {
+      const response = await fetch('/api/method/crm.api.referral.handle_referral_webhook', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        mode: 'cors',
         body: JSON.stringify({
           source: 'getreport',
           start_date: dateRange.start,
@@ -102,11 +103,12 @@ const ReferralIncentive: React.FC = () => {
         throw new Error('Failed to fetch data');
       }
 
-      const data: ApiResponse[] = await response.json();
+      const data: ApiResponse = await response.json();
       
-      if (data && data[0] && data[0].message) {
-        setReferralData(data[0].message);
-        const processed = processReferralData(data[0].message);
+      // Updated to handle new response structure
+      if (data && data.message && data.message.data) {
+        setReferralData(data.message.data);
+        const processed = processReferralData(data.message.data);
         setSummaryData(processed.summary);
         setClientDetails(processed.clientDetails);
         setLedger(processed.ledger);
@@ -131,7 +133,7 @@ const ReferralIncentive: React.FC = () => {
     { id: 'overview', label: 'Overview', icon: Activity },
     { id: 'client-details', label: 'Client Details', icon: Users },
     { id: 'ledger', label: 'Ledger', icon: Package },
-    { id: 'profile', label: 'Profile', icon: User } // Add Profile tab
+    { id: 'profile', label: 'Profile', icon: User }
   ];
 
   // Loading overlay component
@@ -146,8 +148,6 @@ const ReferralIncentive: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Loading Overlay */}
-      {isInitialLoading && <LoadingOverlay />}
 
       <div className="w-full p-6">
 
