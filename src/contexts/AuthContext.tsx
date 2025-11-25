@@ -160,7 +160,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       } else if (responseRole === 'hr') {
         userRole = 'hr';
       } else if (responseRole === 'client') {
-        userRole = 'employee'; // Map 'client' role to 'employee'
+        userRole = 'client'; // Map 'client' role to 'employee'
       }
 
       // Create user data from the API response

@@ -218,7 +218,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
                     </Avatar>
                     <div className="text-left">
                       <div className="text-sm font-medium text-slate-800">
-                        {user?.clientid}
+                        {user?.clientid?.toUpperCase()}
                       </div>
                       <div className="text-xs text-slate-500">
                         {user?.role}
